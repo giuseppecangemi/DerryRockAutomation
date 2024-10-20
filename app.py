@@ -2,6 +2,9 @@ from flask import Flask, request, render_template, redirect, url_for
 import pandas as pd
 import os
 
+pip show flask
+
+
 app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = 'uploads'  # Cartella per i file caricati
 
