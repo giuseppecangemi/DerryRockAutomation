@@ -66,10 +66,10 @@ def submit():
     )
 
     # Aggiungi e commit la sessione
-    session = Session()
-    session.add(new_user)
-    session.commit()
-    session.close()
+    db_session = Session()
+    db_session.add(new_user)
+    db_session.commit()
+    db_session.close()
 
     return redirect(url_for('index'))
 
@@ -89,19 +89,24 @@ def view_users():
     if 'authenticated' not in session:
         return redirect(url_for('login'))
 
-    session = Session()
-    users = session.query(User).all()
-    session.close()
-    return render_template('view_users.html', users=users)
+    db_session = Session()  # Usa un nome diverso per la sessione del database
+    try:
+        users = db_session.query(User).all()
+        return render_template('view_users.html', users=users)
+    except Exception as e:
+        print("Errore nel recupero degli utenti:", e)  # Stampa l'errore nei log
+        return "Si è verificato un errore nel recupero degli utenti.", 500
+    finally:
+        db_session.close()  # Assicurati di chiudere la sessione
 
 @app.route('/update_approval/<int:user_id>', methods=['POST'])
 def update_approval(user_id):
-    session = Session()
-    user = session.query(User).get(user_id)
+    db_session = Session()
+    user = db_session.query(User).get(user_id)
     if user:
         user.approvato = "SI"  # Imposta a "SI" se approvato
-        session.commit()
-    session.close()
+        db_session.commit()
+    db_session.close()
     return redirect(url_for('view_users'))
 
 @app.route('/uploads/<path:filename>')
