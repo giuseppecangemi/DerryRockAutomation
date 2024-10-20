@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Visualizza Utenti</title>
+</head>
+<body>
+    <h1>Elenco Utenti</h1>
+    <table border="1">
+        <tr>
+            <th>ID</th>
+            <th>Nome</th>
+            <th>Cognome</th>
+            <th>Email</th>
+            <th>File</th>
+            <th>Approvato</th>
+            <th>Numero Tessera</th>
+            <th>Inviato</th>
+        </tr>
+        {% for user in users %}
+        <tr>
+            <td>{{ user.id }}</td>
+            <td>{{ user.nome }}</td>
+            <td>{{ user.cognome }}</td>
+            <td>{{ user.email }}</td>
+            <td>{{ user.file }}</td>
+            <td>{{ user.approvato }}</td>
+            <td>{{ user.numero_tessera }}</td>
+            <td>{{ user.inviato }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+</body>
+</html>

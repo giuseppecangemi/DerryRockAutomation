@@ -4,11 +4,10 @@ from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import Column, Integer, String
 from sqlalchemy.orm import sessionmaker
-from flask import send_from_directory
 
 # Configurazione dell'app Flask
 app = Flask(__name__)
-app.config['UPLOAD_FOLDER'] = 'uploads'  # Cartella per i file caricati
+app.config['UPLOAD_FOLDER'] = 'uploads'
 
 # Assicurati che la cartella esista
 if not os.path.exists(app.config['UPLOAD_FOLDER']):
@@ -68,14 +67,17 @@ def submit():
     session = Session()
     session.add(new_user)
     session.commit()
-    session.close()  # Chiudi la sessione
+    session.close()
 
     return redirect(url_for('index'))
 
-@app.route('/uploads/<path:filename>')
-def download_file(filename):
-    return send_from_directory(app.config['UPLOAD_FOLDER'], filename)
+@app.route('/view_users')
+def view_users():
+    session = Session()
+    users = session.query(User).all()
+    session.close()
+    return render_template('view_users.html', users=users)
 
 if __name__ == '__main__':
-    port = int(os.environ.get('PORT', 5000))  # Imposta la porta
+    port = int(os.environ.get('PORT', 5000))
     app.run(host='0.0.0.0', port=port, debug=True)
