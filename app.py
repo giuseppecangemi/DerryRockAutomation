@@ -73,21 +73,21 @@ def submit():
 
     return redirect(url_for('index'))
 
-@app.route('/login', methods=['GET', 'POST'])
-def login():
-    if request.method == 'POST':
-        pin = request.form['pin']
-        if pin == '1234':  # Sostituisci con il tuo PIN
-            session['authenticated'] = True  # Imposta la variabile di sessione
-            return redirect(url_for('view_users'))
-        else:
-            return "PIN errato!", 403  # Gestisci l'errore del PIN
-    return render_template('login.html')  # Ritorna il template se è un GET
+#@app.route('/login', methods=['GET', 'POST'])
+#def login():
+#    if request.method == 'POST':
+#        pin = request.form['pin']
+#        if pin == '1234':  # Sostituisci con il tuo PIN
+#            session['authenticated'] = True  # Imposta la variabile di sessione
+#            return redirect(url_for('view_users'))
+#        else:
+#            return "PIN errato!", 403  # Gestisci l'errore del PIN
+#    return render_template('login.html')  # Ritorna il template se è un GET
 
 @app.route('/view_users')
 def view_users():
-    if 'authenticated' not in session:
-        return redirect(url_for('login'))
+    #if 'authenticated' not in session:
+    #    return redirect(url_for('login'))
 
     db_session = Session()  # Usa un nome diverso per la sessione del database
     try:
