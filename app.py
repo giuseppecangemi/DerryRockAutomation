@@ -1,4 +1,4 @@
-from flask import Flask, request, render_template, redirect, url_for
+from flask import Flask, request, render_template, redirect, url_for, send_from_directory
 import os
 from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
@@ -78,12 +78,16 @@ def view_users():
     session.close()
     return render_template('view_users.html', users=users)
 
+@app.route('/uploads/<path:filename>')
+def download_file(filename):
+    return send_from_directory(app.config['UPLOAD_FOLDER'], filename)
+
 @app.route('/update_approval/<int:user_id>', methods=['POST'])
 def update_approval(user_id):
     session = Session()
     user = session.query(User).get(user_id)
     if user:
-        user.approvato = "SI"  # Imposta a "SI" se approvato, puoi cambiarlo a "NO" o altro se necessario
+        user.approvato = "SI"  # Imposta a "SI" se approvato
         session.commit()
     session.close()
     return redirect(url_for('view_users'))
