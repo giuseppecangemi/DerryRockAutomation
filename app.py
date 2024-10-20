@@ -58,7 +58,7 @@ def submit():
         cognome=cognome,
         email=email,
         file=file.filename,
-        approvato="SI",
+        approvato="",
         numero_tessera=None,
         inviato=""
     )
@@ -77,6 +77,16 @@ def view_users():
     users = session.query(User).all()
     session.close()
     return render_template('view_users.html', users=users)
+
+@app.route('/update_approval/<int:user_id>', methods=['POST'])
+def update_approval(user_id):
+    session = Session()
+    user = session.query(User).get(user_id)
+    if user:
+        user.approvato = "SI"  # Imposta a "SI" se approvato, puoi cambiarlo a "NO" o altro se necessario
+        session.commit()
+    session.close()
+    return redirect(url_for('view_users'))
 
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5000))
