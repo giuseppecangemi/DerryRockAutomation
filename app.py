@@ -1,12 +1,14 @@
-from flask import Flask, request, render_template, redirect, url_for, send_from_directory
+from flask import Flask, request, render_template, redirect, url_for, session
 import os
 from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import Column, Integer, String
 from sqlalchemy.orm import sessionmaker
+from flask import send_from_directory
 
 # Configurazione dell'app Flask
 app = Flask(__name__)
+app.secret_key = 'una_chiave_segreta'  # Cambia con una chiave segreta
 app.config['UPLOAD_FOLDER'] = 'uploads'
 
 # Assicurati che la cartella esista
@@ -71,16 +73,26 @@ def submit():
 
     return redirect(url_for('index'))
 
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    if request.method == 'POST':
+        pin = request.form['pin']
+        if pin == 'tuo_pin_segreto':  # Sostituisci con il tuo PIN
+            session['authenticated'] = True  # Imposta la variabile di sessione
+            return redirect(url_for('view_users'))
+        else:
+            return "PIN errato!", 403
+    return render_template('login.html')
+
 @app.route('/view_users')
 def view_users():
+    if 'authenticated' not in session:
+        return redirect(url_for('login'))
+
     session = Session()
     users = session.query(User).all()
     session.close()
     return render_template('view_users.html', users=users)
-
-@app.route('/uploads/<path:filename>')
-def download_file(filename):
-    return send_from_directory(app.config['UPLOAD_FOLDER'], filename)
 
 @app.route('/update_approval/<int:user_id>', methods=['POST'])
 def update_approval(user_id):
@@ -91,6 +103,10 @@ def update_approval(user_id):
         session.commit()
     session.close()
     return redirect(url_for('view_users'))
+
+@app.route('/uploads/<path:filename>')
+def download_file(filename):
+    return send_from_directory(app.config['UPLOAD_FOLDER'], filename)
 
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5000))
