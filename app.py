@@ -14,7 +14,7 @@ if not os.path.exists(app.config['UPLOAD_FOLDER']):
     os.makedirs(app.config['UPLOAD_FOLDER'])
 
 # Configurazione del database PostgreSQL
-DATABASE_URL = os.getenv('postgresql://db_derryrock_user:F3RW728z9Tbhhckj5RwUf2yO3RWCUUnF@dpg-csamt28gph6c73a4ftvg-a.oregon-postgres.render.com/db_derryrock')  # Imposta l'URL del database nel tuo ambiente
+DATABASE_URL = os.getenv('DATABASE_URL')  # Usa la variabile d'ambiente
 engine = create_engine(DATABASE_URL)
 Base = declarative_base()
 
