@@ -77,12 +77,12 @@ def submit():
 def login():
     if request.method == 'POST':
         pin = request.form['pin']
-        if pin == 'tuo_pin_segreto':  # Sostituisci con il tuo PIN
+        if pin == '1234':  # Sostituisci con il tuo PIN
             session['authenticated'] = True  # Imposta la variabile di sessione
             return redirect(url_for('view_users'))
         else:
-            return "PIN errato!", 403
-    return render_template('login.html')
+            return "PIN errato!", 403  # Gestisci l'errore del PIN
+    return render_template('login.html')  # Ritorna il template se è un GET
 
 @app.route('/view_users')
 def view_users():

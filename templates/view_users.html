@@ -6,16 +6,8 @@
     <title>Visualizza Utenti</title>
 </head>
 <body>
-    <h1>Accesso ai Utenti Registrati</h1>
+    <h1>Utenti Registrati</h1>
     
-    {% if not authenticated %}
-    <form action="{{ url_for('login') }}" method="POST">
-        <label for="pin">Inserisci il PIN:</label>
-        <input type="password" id="pin" name="pin" required>
-        <button type="submit">Accedi</button>
-    </form>
-    {% else %}
-    <h2>Utenti Registrati</h2>
     <table border="1">
         <tr>
             <th>Nome</th>
@@ -40,6 +32,5 @@
         </tr>
         {% endfor %}
     </table>
-    {% endif %}
 </body>
 </html>
