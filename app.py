@@ -2,7 +2,6 @@ from flask import Flask, request, render_template, redirect, url_for
 import pandas as pd
 import os
 
-pip show flask
 
 
 app = Flask(__name__)
