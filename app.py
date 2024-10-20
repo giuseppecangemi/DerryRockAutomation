@@ -4,6 +4,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import Column, Integer, String
 from sqlalchemy.orm import sessionmaker
+from flask import send_from_directory
 
 # Configurazione dell'app Flask
 app = Flask(__name__)
@@ -70,6 +71,10 @@ def submit():
     session.close()  # Chiudi la sessione
 
     return redirect(url_for('index'))
+
+@app.route('/uploads/<path:filename>')
+def download_file(filename):
+    return send_from_directory(app.config['UPLOAD_FOLDER'], filename)
 
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5000))  # Imposta la porta
