@@ -6,7 +6,12 @@ from reportlab.pdfgen import canvas
 from mail import send_email
 
 # Percorso del file Excel
-file_path = 'dati.xlsx'
+file_path = 'dati_soci.xlsx'
+#richiamo export DB per lavorare sull'excel:
+from export_DB import export_data_to_excel 
+DATABASE_URL = 'postgresql://db_derryrock_user:F3RW728z9Tbhhckj5RwUf2yO3RWCUUnF@dpg-csamt28gph6c73a4ftvg-a.oregon-postgres.render.com/db_derryrock'
+# Richiama la funzione per esportare i dati
+export_data_to_excel(DATABASE_URL, file_path)
 
 # Percorso per salvare i PDF
 pdf_output_folder = 'tessere'
@@ -18,31 +23,31 @@ if os.path.exists(file_path):
     df = pd.read_excel(file_path)
 
     # Aggiungi la colonna "Inviato" all'inizio se non esiste
-    if 'Inviato' not in df.columns:
-        df.insert(0, 'Inviato', '')  # Inserisci la colonna "Inviato" con valori vuoti
+    if 'inviato' not in df.columns:
+        df.insert(0, 'inviato', '')  # Inserisci la colonna "Inviato" con valori vuoti
 
     # Trova il valore massimo nella colonna "Numero Tessera"
-    if not df['Numero Tessera'].isnull().all():  # Assicurati che non siano tutte nulle
-        numero_tessera = df['Numero Tessera'].max()
+    if not df['numero_tessera'].isnull().all():  # Assicurati che non siano tutte nulle
+        numero_tessera = df['numero_tessera'].max()
     else:
         numero_tessera = 0  # Se tutte le celle sono vuote, partiamo da 0
 
     # Aggiorna la colonna "Numero Tessera" per gli approvati
     for index, row in df.iterrows():
-        if row['Approvato'] == 'SI' and pd.isnull(row['Numero Tessera']):
+        if row['approvato'] == 'SI' and pd.isnull(row['numero_tessera']):
             numero_tessera += 1  # Incrementa il numero tessera
-            df.at[index, 'Numero Tessera'] = numero_tessera
+            df.at[index, 'numero_tessera'] = numero_tessera
 
     # Salva il DataFrame aggiornato nel file Excel
     df.to_excel(file_path, index=False)
     print("File Excel aggiornato con i numeri tessera.")
 
     # Filtra solo i soci approvati che non sono stati inviati (colonna "Inviato" vuota)
-    soci_approvati = df[(df['Approvato'] == 'SI') & (df['Inviato'].isnull())]
+    soci_approvati = df[(df['approvato'] == 'SI') & (df['inviato'].isnull())]
 
     # Genera un PDF per ogni socio approvato non inviato
     for index, row in soci_approvati.iterrows():
-        pdf_filename = os.path.join(pdf_output_folder, f'tessera_{int(row["Numero Tessera"])}.pdf')
+        pdf_filename = os.path.join(pdf_output_folder, f'tessera_{int(row["numero_tessera"])}.pdf')
         
         # Crea un canvas per il PDF
         c = canvas.Canvas(pdf_filename, pagesize=letter)
@@ -63,13 +68,13 @@ if os.path.exists(file_path):
         c.setFont("Helvetica", 14)
 
         # Scrivi i dati nel PDF
-        c.drawString(100, y_position, f"Nome: {row['Nome']}")
+        c.drawString(100, y_position, f"Nome: {row['nome']}")
         y_position -= 30  # Sposta in basso
-        c.drawString(100, y_position, f"Cognome: {row['Cognome']}")
+        c.drawString(100, y_position, f"Cognome: {row['cognome']}")
         y_position -= 30
-        c.drawString(100, y_position, f"Email: {row['Email']}")
+        c.drawString(100, y_position, f"Email: {row['email']}")
         y_position -= 30
-        c.drawString(100, y_position, f"Numero Tessera: {row['Numero Tessera']}")
+        c.drawString(100, y_position, f"Numero Tessera: {row['numero_tessera']}")
 
         # Aggiungi un bordo decorativo
         c.setStrokeColor(colors.black)
@@ -87,10 +92,10 @@ if os.path.exists(file_path):
         # Salva il PDF
         c.save()
 
-        send_email(row['Email'], pdf_filename) 
+        send_email(row['email'], pdf_filename) 
 
         # Aggiorna la colonna "Inviato" a "SI"
-        df.at[index, 'Inviato'] = 'SI'
+        df.at[index, 'inviato'] = 'SI'
 
     # Salva il DataFrame aggiornato nel file Excel
     df.to_excel(file_path, index=False)
