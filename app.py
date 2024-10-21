@@ -1,8 +1,7 @@
 from flask import Flask, request, render_template, redirect, url_for, session
 import os
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, Column, BigInteger, String, Float
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy import Column, Integer, String
 from sqlalchemy.orm import sessionmaker
 from flask import send_from_directory
 
@@ -23,13 +22,13 @@ Base = declarative_base()
 # Definizione del modello User
 class User(Base):
     __tablename__ = 'users'
-    id = Column(Integer, primary_key=True, autoincrement=True)
+    id = Column(BigInteger, primary_key=True, autoincrement=True)  # Usa BigInteger per BIGSERIAL
     nome = Column(String)
     cognome = Column(String)
     email = Column(String)
     file = Column(String)
     approvato = Column(String)
-    numero_tessera = Column(Integer)
+    numero_tessera = Column(Float)  # Puoi usare Float per DOUBLE PRECISION
     inviato = Column(String)
 
 # Crea le tabelle nel database
@@ -44,6 +43,7 @@ def index():
 
 @app.route('/submit', methods=['POST'])
 def submit():
+    db_session = Session()  # Sposta la creazione della sessione all'inizio
     try:
         nome = request.form['nome']
         cognome = request.form['cognome']
@@ -64,7 +64,6 @@ def submit():
             inviato=""
         )
 
-        db_session = Session()
         db_session.add(new_user)
         db_session.commit()
         return redirect(url_for('index'))
@@ -103,11 +102,15 @@ def view_users():
 @app.route('/update_approval/<int:user_id>', methods=['POST'])
 def update_approval(user_id):
     db_session = Session()
-    user = db_session.query(User).get(user_id)
-    if user:
-        user.approvato = "SI"  # Imposta a "SI" se approvato
-        db_session.commit()
-    db_session.close()
+    try:
+        user = db_session.query(User).get(user_id)
+        if user:
+            user.approvato = "SI"  # Imposta a "SI" se approvato
+            db_session.commit()
+    except Exception as e:
+        print("Errore nell'aggiornamento dell'approvazione:", e)
+    finally:
+        db_session.close()
     return redirect(url_for('view_users'))
 
 @app.route('/uploads/<path:filename>')
