@@ -4,8 +4,6 @@ from sqlalchemy import create_engine, Column, BigInteger, String, Float
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 from flask import send_from_directory
-from sqlalchemy import func
-
 
 # Configurazione dell'app Flask
 app = Flask(__name__)
@@ -24,7 +22,7 @@ Base = declarative_base()
 # Definizione del modello User
 class User(Base):
     __tablename__ = 'users'
-    id = Column(BigInteger, primary_key=True, autoincrement=True)  # Usa BigInteger per BIGSERIAL
+    id = Column(BigInteger, primary_key=True, autoincrement=True)  # Lascia gestire l'ID a PostgreSQL
     nome = Column(String)
     cognome = Column(String)
     email = Column(String)
@@ -50,32 +48,31 @@ def submit():
         nome = request.form['nome']
         cognome = request.form['cognome']
         email = request.form['email']
-        file = request.files['file']
+        file = request.files.get('file')  # Usa .get per evitare KeyError
 
+        # Controlla se il file è stato caricato
         if file:
             file_path = os.path.join(app.config['UPLOAD_FOLDER'], file.filename)
             file.save(file_path)
 
-        max_id = db_session.query(func.max(User.id)).scalar()  # Funzione per ottenere il massimo ID
-        next_id = (max_id + 1) if max_id is not None else 1 
+            new_user = User(
+                nome=nome,
+                cognome=cognome,
+                email=email,
+                file=file.filename,
+                approvato="",
+                numero_tessera=None,  # Lascia a None se non viene fornito
+                inviato=""
+            )
 
-        new_user = User(
-            id=next_id,
-            nome=nome,
-            cognome=cognome,
-            email=email,
-            file=file.filename,
-            approvato="",
-            numero_tessera=None,  # Utilizza il valore corretto qui
-            inviato=""
-        )
-
-        db_session.add(new_user)
-        db_session.commit()
-        return redirect(url_for('index'))
+            db_session.add(new_user)
+            db_session.commit()
+            return redirect(url_for('index'))
+        else:
+            return "Nessun file caricato.", 400  # Ritorna errore se il file non è stato caricato
     except Exception as e:
         print("Errore durante l'inserimento:", e)  # Stampa l'errore nei log
-        return "Si è verificato un errore durante l'inserimento dei dati.", 500
+        return f"Si è verificato un errore durante l'inserimento dei dati: {e}", 500  # Includi l'errore nel messaggio di risposta
     finally:
         db_session.close()
 
@@ -101,7 +98,7 @@ def view_users():
         return render_template('view_users.html', users=users)
     except Exception as e:
         print("Errore nel recupero degli utenti:", e)  # Stampa l'errore nei log
-        return "Si è verificato un errore nel recupero degli utenti.", 500
+        return f"Si è verificato un errore nel recupero degli utenti: {e}", 500  # Includi l'errore nel messaggio di risposta
     finally:
         db_session.close()  # Assicurati di chiudere la sessione
 
@@ -113,8 +110,11 @@ def update_approval(user_id):
         if user:
             user.approvato = "SI"  # Imposta a "SI" se approvato
             db_session.commit()
+        else:
+            return "Utente non trovato.", 404  # Ritorna errore se l'utente non esiste
     except Exception as e:
         print("Errore nell'aggiornamento dell'approvazione:", e)
+        return f"Si è verificato un errore nell'aggiornamento dell'approvazione: {e}", 500  # Includi l'errore nel messaggio di risposta
     finally:
         db_session.close()
     return redirect(url_for('view_users'))
