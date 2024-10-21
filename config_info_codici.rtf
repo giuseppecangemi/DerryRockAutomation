@@ -2,7 +2,7 @@
 \cocoatextscaling0\cocoaplatform0{\fonttbl\f0\fnil\fcharset0 Menlo-Regular;}
 {\colortbl;\red255\green255\blue255;\red0\green0\blue0;}
 {\*\expandedcolortbl;;\csgray\c0;}
-\paperw11900\paperh16840\margl1440\margr1440\vieww12500\viewh16380\viewkind1
+\paperw11900\paperh16840\margl1440\margr1440\vieww11940\viewh7980\viewkind1
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
 
 \f0\fs22 \cf2 \CocoaLigature0 codice accesso al DB da terminale:\
@@ -20,5 +20,16 @@ git add .\
 git commit -m \'93messaggio\'94\
 git push --force origin master\
 \
+\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\
+CREATE TABLE users (\
+    id SERIAL PRIMARY KEY,       -- Utilizza SERIAL per l'auto-incremento\
+    nome VARCHAR(255),           -- Stringa di massimo 255 caratteri\
+    cognome VARCHAR(255),        -- Stringa di massimo 255 caratteri\
+    email VARCHAR(255),          -- Stringa di massimo 255 caratteri\
+    file VARCHAR(255),           -- Stringa di massimo 255 caratteri\
+    approvato VARCHAR(10),       -- Stringa di massimo 10 caratteri (puoi modificare la lunghezza se necessario)\
+    numero_tessera VARCHAR(20),  -- Stringa di massimo 20 caratteri (adatta la lunghezza secondo le tue necessit\'e0)\
+    inviato VARCHAR(10)          -- Stringa di massimo 10 caratteri (puoi modificare la lunghezza se necessario)\
+);\
 \'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\
 }
