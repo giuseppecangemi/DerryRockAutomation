@@ -79,7 +79,7 @@ if os.path.exists(file_path):
     if not df['numero_tessera'].isnull().all():  # Assicurati che non siano tutte nulle
         numero_tessera = df['numero_tessera'].max()
     else:
-        numero_tessera = 0  # Se tutte le celle sono vuote, partiamo da 0
+        numero_tessera = 1200  # Se tutte le celle sono vuote, partiamo da 0
 
     # Aggiorna la colonna "Numero Tessera" per gli approvati
     for index, row in df.iterrows():

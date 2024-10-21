@@ -29,7 +29,7 @@ class User(Base):
     email = Column(String)
     file = Column(String)
     approvato = Column(String)
-    numero_tessera = Column(String)
+    numero_tessera = Column(Integer)
     inviato = Column(String)
 
 # Crea le tabelle nel database
