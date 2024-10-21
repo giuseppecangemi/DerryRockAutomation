@@ -23,7 +23,7 @@ Base = declarative_base()
 # Definizione del modello User
 class User(Base):
     __tablename__ = 'users'
-    id = Column(Integer, primary_key=True)
+    id = Column(Integer, primary_key=True, autoincrement=True)
     nome = Column(String)
     cognome = Column(String)
     email = Column(String)
