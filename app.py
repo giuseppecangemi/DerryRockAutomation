@@ -4,6 +4,8 @@ from sqlalchemy import create_engine, Column, BigInteger, String, Float
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 from flask import send_from_directory
+from sqlalchemy import func
+
 
 # Configurazione dell'app Flask
 app = Flask(__name__)
@@ -54,13 +56,17 @@ def submit():
             file_path = os.path.join(app.config['UPLOAD_FOLDER'], file.filename)
             file.save(file_path)
 
+        max_id = db_session.query(func.max(User.id)).scalar()  # Funzione per ottenere il massimo ID
+        next_id = (max_id + 1) if max_id is not None else 1 
+
         new_user = User(
+            id=next_id,
             nome=nome,
             cognome=cognome,
             email=email,
             file=file.filename,
             approvato="",
-            numero_tessera=None,
+            numero_tessera=None,  # Utilizza il valore corretto qui
             inviato=""
         )
 
