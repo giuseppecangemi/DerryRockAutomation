@@ -4,14 +4,17 @@ from reportlab.lib import colors
 from reportlab.lib.pagesizes import letter
 from reportlab.pdfgen import canvas
 from mail import send_email
+import psycopg2
+from sqlalchemy import create_engine
+from urllib.parse import urlparse
 
 # Percorso del file Excel
 file_path = 'dati_soci.xlsx'
 #richiamo export DB per lavorare sull'excel:
-from export_DB import export_data_to_excel 
-DATABASE_URL = 'postgresql://db_derryrock_user:F3RW728z9Tbhhckj5RwUf2yO3RWCUUnF@dpg-csamt28gph6c73a4ftvg-a.oregon-postgres.render.com/db_derryrock'
-# Richiama la funzione per esportare i dati
-export_data_to_excel(DATABASE_URL, file_path)
+#from export_DB import export_data_to_excel 
+#DATABASE_URL = 'postgresql://db_derryrock_user:F3RW728z9Tbhhckj5RwUf2yO3RWCUUnF@dpg-csamt28gph6c73a4ftvg-a.oregon-postgres.render.com/db_derryrock'
+## Richiama la funzione per esportare i dati
+#export_data_to_excel(DATABASE_URL, file_path)
 
 # Percorso per salvare i PDF
 pdf_output_folder = 'tessere'
@@ -97,8 +100,34 @@ if os.path.exists(file_path):
         # Aggiorna la colonna "Inviato" a "SI"
         df.at[index, 'inviato'] = 'SI'
 
+
     # Salva il DataFrame aggiornato nel file Excel
     df.to_excel(file_path, index=False)
+    #e nel DB
+    database_url = "postgresql://db_derryrock_user:F3RW728z9Tbhhckj5RwUf2yO3RWCUUnF@dpg-csamt28gph6c73a4ftvg-a.oregon-postgres.render.com/db_derryrock"
+    table_name='users'
+    engine = create_engine(database_url)
+    df.to_sql(table_name, con=engine, if_exists='replace', index=False)
     print(f"Tessere generate e salvate nella cartella '{pdf_output_folder}'.")
+    print(f"Aggiornato DB '{table_name}'.")
 else:
-    print("Il file Excel non esiste.")
+    print("Il file Excel non esiste o problema su DB")
+   
+    
+
+
+
+
+
+database_url = "postgresql://db_derryrock_user:F3RW728z9Tbhhckj5RwUf2yO3RWCUUnF@dpg-csamt28gph6c73a4ftvg-a.oregon-postgres.render.com/db_derryrock"
+def upload_data_to_db(database_url, df, table_name='users'):
+    # Crea un motore di connessione
+    engine = create_engine(database_url)
+
+    try:
+        # Scrivi il DataFrame nella tabella specificata
+        df.to_sql(table_name, con=engine, if_exists='replace', index=False)
+        print(f"Dati caricati nella tabella '{table_name}' del database.")
+    except Exception as e:
+        print(f"Errore durante il caricamento dei dati nel database: {e}")
+upload_data_to_db(database_url, df, table_name='users')

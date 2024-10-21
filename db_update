@@ -1,0 +1,24 @@
+def update_db(email, numero_tessera):
+    try:
+        # Connessione al database
+        conn = psycopg2.connect(DATABASE_URL)
+        cursor = conn.cursor()
+
+        # Esegui l'aggiornamento
+        update_query = """
+            UPDATE soci
+            SET inviato = %s, numero_tessera = %s
+            WHERE email = %s;
+        """
+        cursor.execute(update_query, ('SI', numero_tessera, email))
+        
+        # Salva le modifiche
+        conn.commit()
+        print(f"Database aggiornato per l'email: {email} con numero tessera: {numero_tessera}")
+
+    except Exception as e:
+        print(f"Errore durante l'aggiornamento del database: {e}")
+    finally:
+        # Chiudi la connessione
+        cursor.close()
+        conn.close()

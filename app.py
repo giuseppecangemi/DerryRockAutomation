@@ -44,34 +44,35 @@ def index():
 
 @app.route('/submit', methods=['POST'])
 def submit():
-    nome = request.form['nome']
-    cognome = request.form['cognome']
-    email = request.form['email']
-    file = request.files['file']
+    try:
+        nome = request.form['nome']
+        cognome = request.form['cognome']
+        email = request.form['email']
+        file = request.files['file']
 
-    # Salva il file nella cartella uploads
-    if file:
-        file_path = os.path.join(app.config['UPLOAD_FOLDER'], file.filename)
-        file.save(file_path)
+        if file:
+            file_path = os.path.join(app.config['UPLOAD_FOLDER'], file.filename)
+            file.save(file_path)
 
-    # Crea un nuovo oggetto User
-    new_user = User(
-        nome=nome,
-        cognome=cognome,
-        email=email,
-        file=file.filename,
-        approvato="",
-        numero_tessera=None,
-        inviato=""
-    )
+        new_user = User(
+            nome=nome,
+            cognome=cognome,
+            email=email,
+            file=file.filename,
+            approvato="",
+            numero_tessera=None,
+            inviato=""
+        )
 
-    # Aggiungi e commit la sessione
-    db_session = Session()
-    db_session.add(new_user)
-    db_session.commit()
-    db_session.close()
-
-    return redirect(url_for('index'))
+        db_session = Session()
+        db_session.add(new_user)
+        db_session.commit()
+        return redirect(url_for('index'))
+    except Exception as e:
+        print("Errore durante l'inserimento:", e)  # Stampa l'errore nei log
+        return "Si è verificato un errore durante l'inserimento dei dati.", 500
+    finally:
+        db_session.close()
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
