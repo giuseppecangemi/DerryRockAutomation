@@ -56,7 +56,6 @@ def submit():
             file.save(file_path)
 
             new_user = User(
-                id=None,
                 nome=nome,
                 cognome=cognome,
                 email=email,
