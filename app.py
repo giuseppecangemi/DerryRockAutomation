@@ -30,6 +30,8 @@ class User(Base):
     approvato = Column(String)
     numero_tessera = Column(BigInteger)  # Puoi usare Float per DOUBLE PRECISION
     inviato = Column(String)
+    manuale = Column(String)  # Aggiunto il campo manuale
+
 
 # Crea le tabelle nel database
 Base.metadata.create_all(engine)
@@ -141,6 +143,23 @@ def update_approval(user_id):
     except Exception as e:
         print("Errore nell'aggiornamento dell'approvazione:", e)
         return f"Si è verificato un errore nell'aggiornamento dell'approvazione: {e}", 500  # Includi l'errore nel messaggio di risposta
+    finally:
+        db_session.close()
+    return redirect(url_for('view_users'))
+
+@app.route('/update_manual/<int:user_id>', methods=['POST'])
+def update_manual(user_id):
+    db_session = Session()
+    try:
+        user = db_session.query(User).get(user_id)
+        if user:
+            user.manuale = request.form['manuale']  # Aggiorna il valore del campo manuale
+            db_session.commit()
+        else:
+            return "Utente non trovato.", 404
+    except Exception as e:
+        print("Errore nell'aggiornamento del manuale:", e)
+        return f"Si è verificato un errore nell'aggiornamento del manuale: {e}", 500
     finally:
         db_session.close()
     return redirect(url_for('view_users'))
