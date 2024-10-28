@@ -15,8 +15,8 @@
             <th>Email</th>
             <th>File</th>
             <th>Approvato</th>
-            <th>Numero Tessera</th>  <!-- Aggiunta della colonna per il numero tessera -->
-            <th>Manuale</th>  <!-- Aggiunta della colonna "manuale" -->
+            <th>Numero Tessera</th>  <!-- Colonna per il numero tessera -->
+            <th>Manuale</th>  <!-- Colonna "manuale" -->
             <th>Azioni</th>
         </tr>
         {% for user in users %}
@@ -27,8 +27,8 @@
             <td><a href="{{ url_for('download_file', filename=user.file) }}">{{ user.file }}</a></td>
             <td>{{ user.approvato }}</td>
             <td>
-                <form action="{{ url_for('update_tessera', user_id=user.id) }}" method="POST">
-                    <input type="number" name="numero_tessera" value="{{ user.numero_tessera }}" placeholder="Numero Tessera" />
+                <form action="{{ url_for('update_card_number', user_id=user.id) }}" method="POST">
+                    <input type="number" name="numero_tessera" value="{{ user.numero_tessera }}" placeholder="Numero Tessera" required />
                     <button type="submit">Salva</button>
                 </form>
             </td>
