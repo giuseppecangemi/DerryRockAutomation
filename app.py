@@ -28,7 +28,7 @@ class User(Base):
     email = Column(String)
     file = Column(String)
     approvato = Column(String)
-    numero_tessera = Column(Float)  # Puoi usare Float per DOUBLE PRECISION
+    numero_tessera = Column(String)  # Puoi usare Float per DOUBLE PRECISION
     inviato = Column(String)
 
 # Crea le tabelle nel database
