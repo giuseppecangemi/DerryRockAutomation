@@ -102,6 +102,32 @@ def view_users():
     finally:
         db_session.close()  # Assicurati di chiudere la sessione
 
+@app.route('/update_card_number/<int:user_id>', methods=['POST'])
+def update_card_number(user_id):
+    db_session = Session()
+    try:
+        user = db_session.query(User).get(user_id)
+        if user:
+            numero_tessera = request.form['numero_tessera']
+            if numero_tessera:
+                user.numero_tessera = numero_tessera  # Salva il numero di tessera fornito
+            else:
+                # Se non è fornito, genera un numero di tessera sequenziale
+                max_numero_tessera = db_session.query(User).filter(User.numero_tessera.isnot(None)).order_by(User.numero_tessera.desc()).first()
+                if max_numero_tessera:
+                    user.numero_tessera = max_numero_tessera.numero_tessera + 1
+                else:
+                    user.numero_tessera = 1  # Inizia da 1 se non ci sono numeri di tessera
+            db_session.commit()
+        else:
+            return "Utente non trovato.", 404  # Ritorna errore se l'utente non esiste
+    except Exception as e:
+        print("Errore nell'aggiornamento del numero di tessera:", e)
+        return f"Si è verificato un errore nell'aggiornamento del numero di tessera: {e}", 500  # Includi l'errore nel messaggio di risposta
+    finally:
+        db_session.close()
+    return redirect(url_for('view_users'))
+
 @app.route('/update_approval/<int:user_id>', methods=['POST'])
 def update_approval(user_id):
     db_session = Session()
