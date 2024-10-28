@@ -1,9 +1,8 @@
-from flask import Flask, request, render_template, redirect, url_for, session
+from flask import Flask, request, render_template, redirect, url_for, session, send_from_directory
 import os
-from sqlalchemy import create_engine, Column, BigInteger, String, Float
+from sqlalchemy import create_engine, Column, BigInteger, String
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
-from flask import send_from_directory
 
 # Configurazione dell'app Flask
 app = Flask(__name__)
@@ -119,9 +118,16 @@ def update_approval(user_id):
         db_session.close()
     return redirect(url_for('view_users'))
 
+@app.route('/uploads')
+def list_uploads():
+    # Ottiene i file dalla cartella di upload
+    files = os.listdir(app.config['UPLOAD_FOLDER'])
+    return render_template('uploads.html', files=files)
+
 @app.route('/uploads/<path:filename>')
 def download_file(filename):
     return send_from_directory(app.config['UPLOAD_FOLDER'], filename)
+
 
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5000))
