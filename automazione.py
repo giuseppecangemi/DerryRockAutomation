@@ -32,18 +32,19 @@ df['numero_tessera'] = pd.to_numeric(df['numero_tessera'], errors='coerce')
 filtered_df = df[df['manuale'] != 'Sì']
 
 # Calcola il massimo valore di "numero_tessera" nel DataFrame filtrato
-numero_tessera = filtered_df['numero_tessera'].max() if not filtered_df['numero_tessera'].isnull().all() else 1200
+# Calcola il massimo valore di numero_tessera escludendo le righe con manuale == 'Sì'
+massimo_valore = df.loc[df['manuale'] != 'Sì', 'numero_tessera'].max()
 
-# Cerco il valore max del numero tessera così da andare in sequenza
-#numero_tessera = df['numero_tessera'].max() if not df['numero_tessera'].isnull().all() else 1200
+# Inizializza numero_tessera a massimo_valore + 1 se massimo_valore non è nullo, altrimenti a 1
+numero_tessera = (massimo_valore + 1) if pd.notnull(massimo_valore) else 1
 
 # LOGICA 1
 for index, row in df.iterrows():
     if row['approvato'] == 'SI' and pd.isnull(row['numero_tessera']):
+        df.at[index, 'numero_tessera'] = numero_tessera  # Assegna numero_tessera
         numero_tessera += 1  # Incrementa il numero tessera
-        df.at[index, 'numero_tessera'] = numero_tessera
     elif row['approvato'] == 'SI' and row['manuale'] == 'Sì':
-        numero_tessera = row['numero_tessera']
+        numero_tessera = row['numero_tessera']  # Assegna il numero_tessera dalla riga corrente
         df.at[index, 'numero_tessera'] = numero_tessera
 
 # Filtra soci approvati (quelli non inviati)
