@@ -28,13 +28,22 @@ if 'inviato' not in df.columns:
 # Converte la colonna 'numero_tessera' in numerico, impostando i valori non validi a NaN
 df['numero_tessera'] = pd.to_numeric(df['numero_tessera'], errors='coerce')
 
+# Filtra il DataFrame per escludere le righe dove "manuale" è "Sì"
+filtered_df = df[df['manuale'] != 'Sì']
+
+# Calcola il massimo valore di "numero_tessera" nel DataFrame filtrato
+numero_tessera = filtered_df['numero_tessera'].max() if not filtered_df['numero_tessera'].isnull().all() else 1200
+
 # Cerco il valore max del numero tessera così da andare in sequenza
-numero_tessera = df['numero_tessera'].max() if not df['numero_tessera'].isnull().all() else 1200
+#numero_tessera = df['numero_tessera'].max() if not df['numero_tessera'].isnull().all() else 1200
 
 # LOGICA 1
 for index, row in df.iterrows():
     if row['approvato'] == 'SI' and pd.isnull(row['numero_tessera']):
         numero_tessera += 1  # Incrementa il numero tessera
+        df.at[index, 'numero_tessera'] = numero_tessera
+    elif row['approvato'] == 'SI' and row['manuale'] == 'Sì':
+        numero_tessera = row['numero_tessera']
         df.at[index, 'numero_tessera'] = numero_tessera
 
 # Filtra soci approvati (quelli non inviati)
