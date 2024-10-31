@@ -4,21 +4,65 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Modulo di Inserimento</title>
+    <style>
+        body { font-family: Arial, sans-serif; }
+        label { display: block; margin-top: 10px; }
+        input[type="text"],
+        input[type="email"],
+        input[type="file"],
+        input[type="date"],
+        select {
+            width: 100%;
+            padding: 8px;
+            margin-top: 5px;
+        }
+        input[type="submit"] {
+            margin-top: 20px;
+            padding: 10px 15px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        input[type="submit"]:hover {
+            background-color: #45a049;
+        }
+    </style>
 </head>
 <body>
     <h1>Inserisci i tuoi dati</h1>
     <form action="/submit" method="post" enctype="multipart/form-data">
         <label for="nome">Nome:</label>
-        <input type="text" name="nome" required><br>
+        <input type="text" name="nome" required>
 
         <label for="cognome">Cognome:</label>
-        <input type="text" name="cognome" required><br>
+        <input type="text" name="cognome" required>
 
         <label for="email">Email:</label>
-        <input type="email" name="email" required><br>
+        <input type="email" name="email" required>
+
+        <label for="citta">Città:</label>
+        <input type="text" name="citta" required>
+
+        <label for="data">Data di nascita:</label>
+        <input type="date" name="data" required>
+
+        <label for="residenza">Residenza:</label>
+        <input type="text" name="residenza" required>
+
+        <label for="sesso">Sesso:</label>
+        <select name="sesso" required>
+            <option value="">Seleziona</option>
+            <option value="Maschile">Maschile</option>
+            <option value="Femminile">Femminile</option>
+            <option value="Altro">Altro</option>
+        </select>
+
+        <label for="carta_identita">Numero Carta d'Identità:</label>
+        <input type="text" name="carta_identita" required>
 
         <label for="file">Carica un file:</label>
-        <input type="file" name="file" accept="image/*" required><br>
+        <input type="file" name="file" accept="image/*" required>
 
         <input type="submit" value="Invia">
     </form>

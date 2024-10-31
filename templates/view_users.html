@@ -1,53 +1,75 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="it">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Visualizza Utenti</title>
+    <style>
+        body { font-family: Arial, sans-serif; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { padding: 10px; text-align: left; border: 1px solid #ddd; }
+        th { background-color: #f2f2f2; }
+        button { padding: 5px 10px; cursor: pointer; }
+        select { padding: 5px; }
+    </style>
 </head>
 <body>
     <h1>Utenti Registrati</h1>
     
-    <table border="1">
-        <tr>
-            <th>Nome</th>
-            <th>Cognome</th>
-            <th>Email</th>
-            <th>File</th>
-            <th>Approvato</th>
-            <th>Numero Tessera</th>  <!-- Colonna per il numero tessera -->
-            <th>Manuale</th>  <!-- Colonna "manuale" -->
-            <th>Azioni</th>
-        </tr>
-        {% for user in users %}
-        <tr>
-            <td>{{ user.nome }}</td>
-            <td>{{ user.cognome }}</td>
-            <td>{{ user.email }}</td>
-            <td><a href="{{ url_for('download_file', filename=user.file) }}">{{ user.file }}</a></td>
-            <td>{{ user.approvato }}</td>
-            <td>
-                <form action="{{ url_for('update_card_number', user_id=user.id) }}" method="POST">
-                    <input type="number" name="numero_tessera" value="{{ user.numero_tessera }}" placeholder="Numero Tessera" required />
-                    <button type="submit">Salva</button>
-                </form>
-            </td>
-            <td>
-                <form action="{{ url_for('update_manual', user_id=user.id) }}" method="POST">
-                    <select name="manuale">
-                        <option value="No" {% if user.manuale == 'No' %}selected{% endif %}>No</option>
-                        <option value="Sì" {% if user.manuale == 'Sì' %}selected{% endif %}>Sì</option>
-                    </select>
-                    <button type="submit">Salva</button>
-                </form>
-            </td>
-            <td>
-                <form action="{{ url_for('update_approval', user_id=user.id) }}" method="POST">
-                    <button type="submit">Approva</button>
-                </form>
-            </td>
-        </tr>
-        {% endfor %}
+    <table>
+        <thead>
+            <tr>
+                <th>Nome</th>
+                <th>Cognome</th>
+                <th>Email</th>
+                <th>Città</th>               <!-- Nuovo campo -->
+                <th>Data di Nascita</th>      <!-- Nuovo campo -->
+                <th>Residenza</th>            <!-- Nuovo campo -->
+                <th>Sesso</th>                <!-- Nuovo campo -->
+                <th>Numero Carta d'Identità</th>  <!-- Nuovo campo -->
+                <th>File</th>
+                <th>Approvato</th>
+                <th>Numero Tessera</th>
+                <th>Manuale</th>
+                <th>Azioni</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for user in users %}
+            <tr>
+                <td>{{ user.nome }}</td>
+                <td>{{ user.cognome }}</td>
+                <td>{{ user.email }}</td>
+                <td>{{ user.citta }}</td>                 <!-- Nuovo campo -->
+                <td>{{ user.data }}</td>                   <!-- Nuovo campo -->
+                <td>{{ user.residenza }}</td>               <!-- Nuovo campo -->
+                <td>{{ user.sesso }}</td>                   <!-- Nuovo campo -->
+                <td>{{ user.carta_identita }}</td>         <!-- Nuovo campo -->
+                <td><a href="{{ url_for('download_file', filename=user.file) }}">{{ user.file }}</a></td>
+                <td>{{ user.approvato }}</td>
+                <td>
+                    <form action="{{ url_for('update_card_number', user_id=user.id) }}" method="POST">
+                        <input type="number" name="numero_tessera" value="{{ user.numero_tessera }}" placeholder="Numero Tessera" required>
+                        <button type="submit">Salva</button>
+                    </form>
+                </td>
+                <td>
+                    <form action="{{ url_for('update_manual', user_id=user.id) }}" method="POST">
+                        <select name="manuale">
+                            <option value="No" {% if user.manuale == 'No' %}selected{% endif %}>No</option>
+                            <option value="Sì" {% if user.manuale == 'Sì' %}selected{% endif %}>Sì</option>
+                        </select>
+                        <button type="submit">Salva</button>
+                    </form>
+                </td>
+                <td>
+                    <form action="{{ url_for('update_approval', user_id=user.id) }}" method="POST">
+                        <button type="submit">Approva</button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
     </table>
 </body>
 </html>
