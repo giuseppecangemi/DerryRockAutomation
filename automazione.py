@@ -116,7 +116,7 @@ with engine.connect() as connection:
 print(f"Tessere generate e salvate nella cartella '{pdf_output_folder}'.")
 
 # Esporta il DataFrame aggiornato in un file Excel
-output_excel_file = 'dati_soci.xlsx'
+output_excel_file = 'DB/dati_soci.xlsx'
 df.to_excel(output_excel_file, index=False)
 print(f"Dati esportati in {output_excel_file}.")
 print(f"Tessere generate e salvate nella cartella '{pdf_output_folder}'.")
