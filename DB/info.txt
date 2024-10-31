@@ -1,1 +1,1 @@
-psql -h postgresql://db_derryrock_user:F3RW728z9Tbhhckj5RwUf2yO3RWCUUnF@dpg-csamt28gph6c73a4ftvg-a/db_derryrock -U db_derryrock_user -d derryrock_DB
+psql -h dpg-csamt28gph6c73a4ftvg-a.oregon-postgres.render.com -U db_derryrock_user db_derryrock
