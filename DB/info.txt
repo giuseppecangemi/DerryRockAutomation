@@ -1,1 +1,3 @@
 psql -h dpg-csamt28gph6c73a4ftvg-a.oregon-postgres.render.com -U db_derryrock_user db_derryrock
+
+PGPASSWORD=F3RW728z9Tbhhckj5RwUf2yO3RWCUUnF 
