@@ -25,12 +25,18 @@ class User(Base):
     id = Column(BigInteger, primary_key=True, autoincrement=True)  # Lascia gestire l'ID a PostgreSQL
     nome = Column(String)
     cognome = Column(String)
+    citta = Column(String)
+    data = Column(String)
+    residenza = Column(String)
+    sesso = Column(String)
     email = Column(String)
+    carta_identita = Column(String)
     file = Column(String)
     approvato = Column(String)
     numero_tessera = Column(BigInteger)  # Puoi usare Float per DOUBLE PRECISION
     inviato = Column(String)
     manuale = Column(String)  # Aggiunto il campo manuale
+
 
 
 # Crea le tabelle nel database
@@ -49,6 +55,11 @@ def submit():
     try:
         nome = request.form['nome']
         cognome = request.form['cognome']
+        citta = request.form['citta']  # Aggiunto
+        data = request.form['data']      # Aggiunto
+        residenza = request.form['residenza']  # Aggiunto
+        sesso = request.form['sesso']          # Aggiunto
+        carta_identita = request.form['carta_identita']  # Aggiunto
         email = request.form['email']
         file = request.files.get('file')  # Usa .get per evitare KeyError
 
@@ -60,6 +71,11 @@ def submit():
             new_user = User(
                 nome=nome,
                 cognome=cognome,
+                citta=citta,             # Aggiunto
+                data=data,               # Aggiunto
+                residenza=residenza,     # Aggiunto
+                sesso=sesso,             # Aggiunto
+                carta_identita=carta_identita,  # Aggiunto
                 email=email,
                 file=file.filename,
                 approvato="",
