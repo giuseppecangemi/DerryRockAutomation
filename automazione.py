@@ -33,7 +33,7 @@ filtered_df = df[df['manuale'] != 'Sì']
 
 # Calcola il massimo valore di "numero_tessera" nel DataFrame filtrato
 # Calcola il massimo valore di numero_tessera escludendo le righe con manuale == 'Sì'
-massimo_valore = df.loc[df['manuale'] != 'No', 'numero_tessera'].max()
+massimo_valore = df.loc[df['manuale'] != 'Sì', 'numero_tessera'].max()
 print("Massimo valore: " + str(massimo_valore))
 # Inizializza numero_tessera a massimo_valore + 1 se massimo_valore non è nullo, altrimenti a 1
 numero_tessera = (massimo_valore + 1) if pd.notnull(massimo_valore) else 1
