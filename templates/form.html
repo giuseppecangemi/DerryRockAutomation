@@ -45,7 +45,7 @@
         <input type="text" name="citta" required>
 
         <label for="data">Data di nascita:</label>
-        <input type="date" name="data" required>
+        <input type="date" name="data" required min="1900-01-01" max="{{ current_date }}" oninput="validateDate(this)">
 
         <label for="residenza">Residenza:</label>
         <input type="text" name="residenza" required>
@@ -81,5 +81,15 @@
 
         <input type="submit" value="Invia">
     </form>
+
+    <script>
+        function validateDate(input) {
+            const maxDate = new Date().toISOString().split("T")[0];
+            if (input.value > maxDate || input.value < "1900-01-01") {
+                alert("Inserisci una data valida compresa tra il 1900 e oggi.");
+                input.value = "";  // Cancella la data non valida
+            }
+        }
+    </script>
 </body>
 </html>
