@@ -27,6 +27,10 @@
         input[type="submit"]:hover {
             background-color: #45a049;
         }
+        .error-message {
+            color: red;
+            font-size: 0.9em;
+        }
     </style>
 </head>
 <body>
@@ -46,6 +50,7 @@
 
         <label for="data">Data di nascita:</label>
         <input type="date" name="data" required min="1900-01-01" max="{{ current_date }}" oninput="validateDate(this)">
+        <span id="dateError" class="error-message"></span>
 
         <label for="residenza">Residenza:</label>
         <input type="text" name="residenza" required>
@@ -85,9 +90,12 @@
     <script>
         function validateDate(input) {
             const maxDate = new Date().toISOString().split("T")[0];
+            const errorSpan = document.getElementById("dateError");
             if (input.value > maxDate || input.value < "1900-01-01") {
-                alert("Inserisci una data valida compresa tra il 1900 e oggi.");
-                input.value = "";  // Cancella la data non valida
+                errorSpan.textContent = "Inserisci una data valida compresa tra il 1900 e oggi.";
+                input.value = "";
+            } else {
+                errorSpan.textContent = "";
             }
         }
     </script>
