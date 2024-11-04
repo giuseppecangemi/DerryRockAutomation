@@ -5,7 +5,6 @@ from reportlab.lib.pagesizes import letter
 from reportlab.pdfgen import canvas
 from mail import send_email
 from sqlalchemy import create_engine, text
-from pdf import crea_pdf 
 
 # URL del database
 DATABASE_URL = 'postgresql://db_derryrock_user:F3RW728z9Tbhhckj5RwUf2yO3RWCUUnF@dpg-csamt28gph6c73a4ftvg-a.oregon-postgres.render.com/db_derryrock'
@@ -57,10 +56,43 @@ soci_approvati = df[(df['approvato'] == 'SI') & (df['inviato'] != 'SI')]
 for index, row in soci_approvati.iterrows():
     pdf_filename = os.path.join(pdf_output_folder, f'tessera_{int(row["numero_tessera"])}.pdf')
     
-    # Crea il PDF
-    crea_pdf(int(row['numero_tessera']), row['nome'], row['cognome'], str(pdf_filename))  # Passa il percorso del file PDF
-    #invia mail
+    # Crea un canvas per il PDF
+    c = canvas.Canvas(pdf_filename, pagesize=letter)
+
+    # Imposta uno sfondo colorato
+    c.setFillColor(colors.lightgrey)
+    c.rect(0, 0, 612, 792, fill=1)  # Riempie lo sfondo
+    # Imposta il font per il titolo
+    c.setFont("Helvetica-Bold", 24)
+    c.setFillColor(colors.black)  # Colore del testo
+    c.drawString(100, 750, "Tessera Associativa - Derry Rock Pub")
+    # Aggiungi più spazio dopo il titolo
+    y_position = 720  # Nuova posizione per il testo
+    # Passa a un font normale per i dettagli
+    c.setFont("Helvetica", 14)
+    # Scrivi i dati nel PDF
+    c.drawString(100, y_position, f"Nome: {row['nome']}")
+    y_position -= 30  # Sposta in basso
+    c.drawString(100, y_position, f"Cognome: {row['cognome']}")
+    y_position -= 30
+    c.drawString(100, y_position, f"Email: {row['email']}")
+    y_position -= 30
+    c.drawString(100, y_position, f"Numero Tessera: {row['numero_tessera']}")
+    # Aggiungi un bordo decorativo
+    c.setStrokeColor(colors.black)
+    c.rect(50, 50, 500, 700, stroke=1, fill=0)
+    # Aggiungi una linea di separazione
+    c.setStrokeColor(colors.grey)
+    c.line(50, y_position - 10, 550, y_position - 10)
+    # Inserisci un'immagine più vicina alla linea
+    image_path = '/Users/giuseppecangemi/Desktop/Programming/Python/DerryRockAutomation/uploads/derryrockfoto.jpg'  # Specifica il percorso della tua immagine
+    image_y_position = 300  # Posiziona l'immagine 20 unità sotto la linea
+    c.drawImage(image_path, 50, image_y_position, width=500, height=300)  # Regola le dimensioni dell'immagine
+    # Salva il PDF
+    c.save()
+
     send_email(row['email'], pdf_filename) 
+
     # Aggiorna la colonna "Inviato" a "SI"
     df.at[index, 'inviato'] = 'SI'
 

@@ -110,24 +110,15 @@ def view_users():
     if 'authenticated' not in session:
         return redirect(url_for('login'))
 
-    db_session = Session()
+    db_session = Session()  # Usa un nome diverso per la sessione del database
     try:
-        # Recupera utenti non approvati
-        non_approvati = db_session.query(User).filter(User.approvato != "SI").all()
-        
-        # Recupera utenti approvati e ordina per cognome
-        approvati = db_session.query(User).filter(User.approvato == "SI").order_by(User.cognome).all()
-        
-        # Combina gli utenti in un'unica lista con non approvati seguiti dagli approvati
-        users = non_approvati + approvati
-
+        users = db_session.query(User).all()
         return render_template('view_users.html', users=users)
     except Exception as e:
-        print("Errore nel recupero degli utenti:", e)
-        return f"Si è verificato un errore nel recupero degli utenti: {e}", 500
+        print("Errore nel recupero degli utenti:", e)  # Stampa l'errore nei log
+        return f"Si è verificato un errore nel recupero degli utenti: {e}", 500  # Includi l'errore nel messaggio di risposta
     finally:
-        db_session.close()
-
+        db_session.close()  # Assicurati di chiudere la sessione
 
 @app.route('/update_card_number/<int:user_id>', methods=['POST'])
 def update_card_number(user_id):

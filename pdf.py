@@ -1,45 +1,51 @@
-import pandas as pd
-import os
-from reportlab.lib import colors
-from reportlab.lib.pagesizes import letter
+from PyPDF2 import PdfReader, PdfWriter
 from reportlab.pdfgen import canvas
+from reportlab.lib.pagesizes import letter
+import io
+import datetime
 
-# Percorso del file Excel
-file_path = 'dati.xlsx'
+def crea_pdf(numero_tessera, nome, cognome, path_out):
+    # Percorso del PDF originale e del nuovo PDF modificato
+    original_pdf_path = "/Users/giuseppecangemi/Desktop/Programming/Python/DerryRockAutomation/tessere/originale/pdf_DRA.pdf"  # Sostituisci con il percorso del tuo PDF esistente
+    output_pdf_path = path_out
 
-# Percorso per salvare i PDF
-pdf_output_folder = 'tessere'
-os.makedirs(pdf_output_folder, exist_ok=True)
+    # Dati esempio
+    data_corrente = datetime.datetime.now().strftime("%d/%m/%Y")
 
-# Controlla se il file esiste
-if os.path.exists(file_path):
-    # Leggi il file Excel
-    df = pd.read_excel(file_path)
+    # Crea un buffer per la sovrapposizione
+    packet = io.BytesIO()
+    c = canvas.Canvas(packet, pagesize=letter)
 
-    # Filtra solo i soci approvati
-    soci_approvati = df[df['Approvato'] == 'SI']
+    # Posiziona i dati sul PDF con un font più grande
+    c.setFont("Helvetica", 16)  # Aumentato a 16
+    c.setFillColor("black")
+    c.drawString(400, 720, f"{data_corrente}")  # Data
+    c.drawString(455, 700, f"{numero_tessera}")  # Numero Tessera
+    c.drawString(360, 670, f"{nome} {cognome}")  # Nome e Cognome
 
-    # Genera un PDF per ogni socio approvato
-    for index, row in soci_approvati.iterrows():
-        pdf_filename = os.path.join(pdf_output_folder, f'tessera_{int(row["Numero Tessera"])}.pdf')
-        
-        # Crea un canvas per il PDF
-        c = canvas.Canvas(pdf_filename, pagesize=letter)
-        c.setFont("Helvetica", 12)
+    # Salva il canvas nel buffer
+    c.save()
 
-        # Scrivi i dati nel PDF
-        c.drawString(100, 750, f"Nome: {row['Nome']}")
-        c.drawString(100, 730, f"Cognome: {row['Cognome']}")
-        c.drawString(100, 710, f"Email: {row['Email']}")
-        c.drawString(100, 690, f"Numero Tessera: {row['Numero Tessera']}")
+    # Carica il contenuto della sovrapposizione
+    packet.seek(0)
+    overlay_pdf = PdfReader(packet)
 
-        # Aggiungi un bordo
-        c.setStrokeColor(colors.black)
-        c.rect(50, 50, 500, 700, stroke=1, fill=0)
+    # Carica il PDF originale
+    original_pdf = PdfReader(original_pdf_path)
+    output_pdf = PdfWriter()
 
-        # Salva il PDF
-        c.save()
+    # Applica la sovrapposizione a ogni pagina del PDF originale
+    for i in range(len(original_pdf.pages)):
+        page = original_pdf.pages[i]
+        # Aggiungi la sovrapposizione
+        page.merge_page(overlay_pdf.pages[0])
+        output_pdf.add_page(page)
 
-    print(f"Tessere generate e salvate nella cartella '{pdf_output_folder}'.")
-else:
-    print("Il file Excel non esiste.")
+    # Salva il PDF risultante
+    with open(output_pdf_path, "wb") as output_stream:
+        output_pdf.write(output_stream)
+
+    print(f"PDF modificato salvato come '{output_pdf_path}'.")
+
+# Esempio di utilizzo della funzione
+#crea_pdf("12345", "Giuseppe", "Cangemi")
