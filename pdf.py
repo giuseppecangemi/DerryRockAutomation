@@ -32,6 +32,7 @@ def crea_pdf(numero_tessera, nome, cognome, path_out):
     # Posiziona i dati sul PDF
     c.setFillColorRGB(0.8, 0.8, 0.8)  # Imposta il colore del testo su grigio molto chiaro
     c.drawString(400, 720, f"{data_corrente}")  # Data
+    c.drawString(50, 145, f"{data_corrente}")  
     c.drawString(455, 700, f"{numero_tessera}")  # Numero Tessera
     c.drawString(345, 670, f"{nome} {cognome}")  # Nome e Cognome
 
