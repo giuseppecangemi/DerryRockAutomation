@@ -30,10 +30,10 @@ def crea_pdf(numero_tessera, nome, cognome, path_out):
     c.setFont("Kredit", 12)  # Usa il font Kredit
 
     # Posiziona i dati sul PDF
-    c.setFillColorRGB(0.9, 0.9, 0.9)  # Imposta il colore del testo su grigio molto chiaro
+    c.setFillColorRGB(0.8, 0.8, 0.8)  # Imposta il colore del testo su grigio molto chiaro
     c.drawString(400, 720, f"{data_corrente}")  # Data
     c.drawString(455, 700, f"{numero_tessera}")  # Numero Tessera
-    c.drawString(360, 670, f"{nome} {cognome}")  # Nome e Cognome
+    c.drawString(345, 670, f"{nome} {cognome}")  # Nome e Cognome
 
     # Salva il canvas nel buffer
     c.save()

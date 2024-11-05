@@ -56,9 +56,9 @@ soci_approvati = df[(df['approvato'] == 'SI') & (df['inviato'] != 'SI')]
 # Creo un PDF per ogni socio approvato non inviato
 for index, row in soci_approvati.iterrows():
     pdf_filename = os.path.join(pdf_output_folder, f'tessera_{int(row["numero_tessera"])}.pdf')
-    
+    nome_str = row['nome'].split()[0]
     # Crea il PDF
-    crea_pdf(int(row['numero_tessera']), row['nome'], row['cognome'], str(pdf_filename))  # Passa il percorso del file PDF
+    crea_pdf(int(row['numero_tessera']), nome_str, row['cognome'], str(pdf_filename))  # Passa il percorso del file PDF
     #invia mail
     send_email(row['email'], pdf_filename) 
     # Aggiorna la colonna "Inviato" a "SI"

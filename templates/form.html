@@ -31,31 +31,36 @@
             color: red;
             font-size: 0.9em;
         }
+        .required:after {
+            content: "*";
+            color: red;
+            margin-left: 5px;
+        }
     </style>
 </head>
 <body>
     <h1>Registrazione Soci Derry Rock Pub Roma</h1>
-    <form action="/submit" method="post" enctype="multipart/form-data">
-        <label for="nome">Nome:</label>
+    <form action="/submit" method="post" enctype="multipart/form-data" onsubmit="return validateForm()">
+        <label for="nome" class="required">Nome:</label>
         <input type="text" name="nome" required>
 
-        <label for="cognome">Cognome:</label>
+        <label for="cognome" class="required">Cognome:</label>
         <input type="text" name="cognome" required>
 
-        <label for="email">Email:</label>
+        <label for="email" class="required">Email:</label>
         <input type="email" name="email" required>
 
-        <label for="citta">Città:</label>
+        <label for="citta" class="required">Città:</label>
         <input type="text" name="citta" required>
 
-        <label for="data">Data di nascita:</label>
+        <label for="data" class="required">Data di nascita:</label>
         <input type="date" name="data" required min="1900-01-01" max="{{ current_date }}" oninput="validateDate(this)">
         <span id="dateError" class="error-message"></span>
 
-        <label for="residenza">Residenza:</label>
+        <label for="residenza" class="required">Residenza:</label>
         <input type="text" name="residenza" required>
 
-        <label for="sesso">Sesso:</label>
+        <label for="sesso" class="required">Sesso:</label>
         <select name="sesso" required>
             <option value="">Seleziona</option>
             <option value="Maschile">Maschile</option>
@@ -64,22 +69,22 @@
         </select>
 
         <label for="carta_identita">Numero Carta d'Identità:</label>
-        <input type="text" name="carta_identita" required>
+        <input type="text" name="carta_identita" id="carta_identita">
 
         <label for="file">Carica un file:</label>
-        <input type="file" name="file" accept="image/*" required>
+        <input type="file" name="file" id="file" accept="image/*">
 
-        <label>
+        <label class="required">
             <input type="checkbox" name="presa_visione_statuto" required>
             Presa visione dello <a href="{{ url_for('static', filename='statuto.pdf') }}" target="_blank">statuto</a>
         </label>
 
-        <label>
+        <label class="required">
             <input type="checkbox" name="dichiarazioni_mendaci" required>
             Consapevole delle conseguenze in merito a dichiarazioni mendaci: chiede l'ammissione al "DERRY ROCK Pub" come socio dell'ASSOCIAZIONE CULTURALE BLOB tramite rilascio della tessera E.N.T.E.S
         </label>
 
-        <label>
+        <label class="required">
             <input type="checkbox" name="trattamento_dati" required>
             Autorizzo al trattamento dei dati personali solo per la registrazione (art. 13 GDPR 679/16)
         </label>
@@ -97,6 +102,21 @@
             } else {
                 errorSpan.textContent = "";
             }
+        }
+
+        function validateForm() {
+            const cartaIdentita = document.getElementById("carta_identita").value;
+            const file = document.getElementById("file").files.length;
+            const errorMessage = document.getElementById("dateError");
+
+            // Verifica che almeno uno tra carta d'identità e file sia fornito
+            if (!cartaIdentita && file === 0) {
+                errorMessage.textContent = "Inserisci il numero della carta d'identità o carica una foto.";
+                return false;
+            } else {
+                errorMessage.textContent = "";
+            }
+            return true;
         }
     </script>
 </body>
