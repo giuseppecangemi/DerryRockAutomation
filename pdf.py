@@ -27,7 +27,7 @@ def crea_pdf(numero_tessera, nome, cognome, path_out):
 
     # Registra e utilizza il font Kredit
     pdfmetrics.registerFont(TTFont('Kredit', font_path))  # Cambia il percorso con quello corretto
-    c.setFont("Kredit", 14)  # Usa il font Kredit
+    c.setFont("Kredit", 12)  # Usa il font Kredit
 
     # Posiziona i dati sul PDF
     c.setFillColorRGB(0.9, 0.9, 0.9)  # Imposta il colore del testo su grigio molto chiaro
