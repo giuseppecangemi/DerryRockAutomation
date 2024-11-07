@@ -57,38 +57,44 @@ def submit():
         sesso = request.form['sesso']          
         carta_identita = request.form['carta_identita']  
         email = request.form['email']
-        file = request.files.get('file') 
+        file = request.files.get('file')  
 
-        #check se file caricato
+        
         if file:
             file_path = os.path.join(app.config['UPLOAD_FOLDER'], file.filename)
             file.save(file_path)
-
-            new_user = User(
-                nome=nome,
-                cognome=cognome,
-                citta=citta,             
-                data=data,               
-                residenza=residenza,     
-                sesso=sesso,             
-                carta_identita=carta_identita,  
-                email=email,
-                file=file.filename,
-                approvato="",
-                numero_tessera=None, 
-                inviato=""
-            )
-
-            db_session.add(new_user)
-            db_session.commit()
-            return redirect(url_for('index'))
+            file_name = file.filename
         else:
-            return "Nessun file caricato.", 400 
+            file_name = None  
+
+        new_user = User(
+            nome=nome,
+            cognome=cognome,
+            citta=citta,             
+            data=data,               
+            residenza=residenza,     
+            sesso=sesso,             
+            carta_identita=carta_identita,  
+            email=email,
+            file=file_name,  
+            approvato="",
+            numero_tessera=None, 
+            inviato=""
+        )
+
+        db_session.add(new_user)
+        db_session.commit()
+
+        
+        return redirect(url_for('index'))
+
     except Exception as e:
         print("Errore durante l'inserimento:", e)  
         return f"Si è verificato un errore durante l'inserimento dei dati: {e}", 500  
+
     finally:
         db_session.close()
+
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
