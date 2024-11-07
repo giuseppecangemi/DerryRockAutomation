@@ -46,7 +46,14 @@
                 <td>{{ user.residenza }}</td>               <!-- Nuovo campo -->
                 <td>{{ user.sesso }}</td>                   <!-- Nuovo campo -->
                 <td>{{ user.carta_identita }}</td>         <!-- Nuovo campo -->
-                <td><a href="{{ url_for('download_file', filename=user.file) }}">{{ user.file }}</a></td>
+                <td>
+                    {% if user.file %}
+                        <a href="{{ url_for('download_file', filename=user.file) }}">Scarica</a>
+                        <!--<a href="{{ url_for('download_file', filename=user.file) }}">{{ user.file }}</a>-->
+                    {% else %}    
+                        Nessun file
+                    {% endif %}
+                </td>
                 <td>{{ user.approvato }}</td>  <!-- Visualizza il valore della colonna approvato -->
                 <td>{{ user.inviato }}</td>    <!-- Visualizza il valore della colonna inviato -->
                 <td>
