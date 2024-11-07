@@ -34,11 +34,15 @@ filtered_df = df[df['manuale'] != 'Sì']
 massimo_valore = df.loc[df['manuale'] != 'Sì', 'numero_tessera'].max()
 print("Massimo valore: " + str(massimo_valore))
 
-numero_tessera = (massimo_valore + 1) if pd.notnull(massimo_valore) else 1
+numero_tessera = (massimo_valore + 1) if pd.notnull(massimo_valore) else 231001
 print("NUMERO TESSERA: " + str(numero_tessera))
 
-if numero_tessera >= 13000:
+if numero_tessera >= 231400:
     raise ValueError("Errore: il range per il numero della tessera è stato superato.")
+
+if any((df['numero_tessera'] == numero_tessera) & (df['manuale'] == 'Sì') & (df['inviato'] == 'SI')):
+    numero_tessera += 1
+    print(f"Numero tessera incrementato a: {numero_tessera}")
 
 # LOGICA 
 for index, row in df.iterrows():

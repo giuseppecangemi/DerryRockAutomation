@@ -46,7 +46,7 @@
                 <td>{{ user.sesso }}</td>                   <!-- Nuovo campo -->
                 <td>{{ user.carta_identita }}</td>         <!-- Nuovo campo -->
                 <td><a href="{{ url_for('download_file', filename=user.file) }}">{{ user.file }}</a></td>
-                <td>{{ user.approvato }}</td>
+                <td>{{ user.approvato }}</td>  <!-- Visualizza il valore della colonna approvato -->
                 <td>
                     <form action="{{ url_for('update_card_number', user_id=user.id) }}" method="POST">
                         <input type="number" name="numero_tessera" value="{{ user.numero_tessera }}" placeholder="Numero Tessera" required>
