@@ -109,7 +109,6 @@
             const file = document.getElementById("file").files.length;
             const errorMessage = document.getElementById("dateError");
 
-            // Verifica che almeno uno tra carta d'identità e file sia fornito
             if (!cartaIdentita && file === 0) {
                 errorMessage.textContent = "Inserisci il numero della carta d'identità o carica una foto.";
                 return false;

@@ -1,7 +1,7 @@
 # Ignora i file di configurazione locali
 #.env
 #config.py
-
+#mail.py
 # Ignora cartelle specifiche
 /DB/
 /uploads/
@@ -9,3 +9,4 @@
 # Ignora tutti i file con estensioni specifiche
 #*.log
 #*.tmp
+.env

@@ -1,28 +1,29 @@
 from flask import Flask, request, render_template, redirect, url_for, session
 import os
+from dotenv import load_dotenv  
 from sqlalchemy import create_engine, Column, BigInteger, String, Float
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 from flask import send_from_directory
 
-# Configurazione dell'app Flask
-app = Flask(__name__)
-app.secret_key = 'una_chiave_segreta'  # Cambia con una chiave segreta
-app.config['UPLOAD_FOLDER'] = 'uploads'
+load_dotenv()
 
-# Assicurati che la cartella esista
+#configuro app flask
+app = Flask(__name__)
+app.secret_key = os.getenv('SECRET_KEY') 
+app.config['UPLOAD_FOLDER'] = os.getenv('UPLOAD_FOLDER')  
+
 if not os.path.exists(app.config['UPLOAD_FOLDER']):
     os.makedirs(app.config['UPLOAD_FOLDER'])
 
-# Configurazione del database PostgreSQL
-DATABASE_URL = os.getenv('DATABASE_URL')  # Usa la variabile d'ambiente
+#conf db PostgreSQL
+DATABASE_URL = os.getenv('DATABASE_URL') 
 engine = create_engine(DATABASE_URL)
 Base = declarative_base()
 
-# Definizione del modello User
 class User(Base):
     __tablename__ = 'users'
-    id = Column(BigInteger, primary_key=True, autoincrement=True)  # Lascia gestire l'ID a PostgreSQL
+    id = Column(BigInteger, primary_key=True, autoincrement=True)  
     nome = Column(String)
     cognome = Column(String)
     citta = Column(String)
@@ -33,16 +34,11 @@ class User(Base):
     carta_identita = Column(String)
     file = Column(String)
     approvato = Column(String)
-    numero_tessera = Column(BigInteger)  # Puoi usare Float per DOUBLE PRECISION
+    numero_tessera = Column(BigInteger)  
     inviato = Column(String)
-    manuale = Column(String)  # Aggiunto il campo manuale
+    manuale = Column(String)
 
-
-
-# Crea le tabelle nel database
 Base.metadata.create_all(engine)
-
-# Crea una sessione per interagire con il database
 Session = sessionmaker(bind=engine)
 
 @app.route('/')
@@ -51,19 +47,19 @@ def index():
 
 @app.route('/submit', methods=['POST'])
 def submit():
-    db_session = Session()  # Sposta la creazione della sessione all'inizio
+    db_session = Session()  
     try:
         nome = request.form['nome']
         cognome = request.form['cognome']
-        citta = request.form['citta']  # Aggiunto
-        data = request.form['data']      # Aggiunto
-        residenza = request.form['residenza']  # Aggiunto
-        sesso = request.form['sesso']          # Aggiunto
-        carta_identita = request.form['carta_identita']  # Aggiunto
+        citta = request.form['citta']  
+        data = request.form['data']      
+        residenza = request.form['residenza']  
+        sesso = request.form['sesso']          
+        carta_identita = request.form['carta_identita']  
         email = request.form['email']
-        file = request.files.get('file')  # Usa .get per evitare KeyError
+        file = request.files.get('file') 
 
-        # Controlla se il file è stato caricato
+        #check se file caricato
         if file:
             file_path = os.path.join(app.config['UPLOAD_FOLDER'], file.filename)
             file.save(file_path)
@@ -71,15 +67,15 @@ def submit():
             new_user = User(
                 nome=nome,
                 cognome=cognome,
-                citta=citta,             # Aggiunto
-                data=data,               # Aggiunto
-                residenza=residenza,     # Aggiunto
-                sesso=sesso,             # Aggiunto
-                carta_identita=carta_identita,  # Aggiunto
+                citta=citta,             
+                data=data,               
+                residenza=residenza,     
+                sesso=sesso,             
+                carta_identita=carta_identita,  
                 email=email,
                 file=file.filename,
                 approvato="",
-                numero_tessera=None,  # Lascia a None se non viene fornito
+                numero_tessera=None, 
                 inviato=""
             )
 
@@ -87,38 +83,39 @@ def submit():
             db_session.commit()
             return redirect(url_for('index'))
         else:
-            return "Nessun file caricato.", 400  # Ritorna errore se il file non è stato caricato
+            return "Nessun file caricato.", 400 
     except Exception as e:
-        print("Errore durante l'inserimento:", e)  # Stampa l'errore nei log
-        return f"Si è verificato un errore durante l'inserimento dei dati: {e}", 500  # Includi l'errore nel messaggio di risposta
+        print("Errore durante l'inserimento:", e)  
+        return f"Si è verificato un errore durante l'inserimento dei dati: {e}", 500  
     finally:
         db_session.close()
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
+    pin = os.getenv('PIN')  
     if request.method == 'POST':
-        pin = request.form['pin']
-        if pin == '1234':  # Sostituisci con il tuo PIN
-            session['authenticated'] = True  # Imposta la variabile di sessione
+        input_pin = request.form['pin']
+        if input_pin == pin:  
+            session['authenticated'] = True 
             return redirect(url_for('view_users'))
         else:
-            return "PIN errato!", 403  # Gestisci l'errore del PIN
-    return render_template('login.html')  # Ritorna il template se è un GET
+            return "PIN errato!", 403
+    return render_template('login.html')  
 
 @app.route('/view_users')
 def view_users():
     if 'authenticated' not in session:
         return redirect(url_for('login'))
 
-    db_session = Session()  # Usa un nome diverso per la sessione del database
+    db_session = Session()
     try:
         users = db_session.query(User).all()
         return render_template('view_users.html', users=users)
     except Exception as e:
-        print("Errore nel recupero degli utenti:", e)  # Stampa l'errore nei log
-        return f"Si è verificato un errore nel recupero degli utenti: {e}", 500  # Includi l'errore nel messaggio di risposta
+        print("Errore nel recupero degli utenti:", e)
+        return f"Si è verificato un errore nel recupero degli utenti: {e}", 500 
     finally:
-        db_session.close()  # Assicurati di chiudere la sessione
+        db_session.close()
 
 @app.route('/update_card_number/<int:user_id>', methods=['POST'])
 def update_card_number(user_id):
@@ -128,20 +125,19 @@ def update_card_number(user_id):
         if user:
             numero_tessera = request.form['numero_tessera']
             if numero_tessera:
-                user.numero_tessera = numero_tessera  # Salva il numero di tessera fornito
+                user.numero_tessera = numero_tessera 
             else:
-                # Se non è fornito, genera un numero di tessera sequenziale
                 max_numero_tessera = db_session.query(User).filter(User.numero_tessera.isnot(None)).order_by(User.numero_tessera.desc()).first()
                 if max_numero_tessera:
                     user.numero_tessera = max_numero_tessera.numero_tessera + 1
                 else:
-                    user.numero_tessera = 1  # Inizia da 1 se non ci sono numeri di tessera
+                    user.numero_tessera = 1  
             db_session.commit()
         else:
-            return "Utente non trovato.", 404  # Ritorna errore se l'utente non esiste
+            return "Utente non trovato.", 404 
     except Exception as e:
         print("Errore nell'aggiornamento del numero di tessera:", e)
-        return f"Si è verificato un errore nell'aggiornamento del numero di tessera: {e}", 500  # Includi l'errore nel messaggio di risposta
+        return f"Si è verificato un errore nell'aggiornamento del numero di tessera: {e}", 500
     finally:
         db_session.close()
     return redirect(url_for('view_users'))
@@ -152,13 +148,13 @@ def update_approval(user_id):
     try:
         user = db_session.query(User).get(user_id)
         if user:
-            user.approvato = "SI"  # Imposta a "SI" se approvato
+            user.approvato = "SI"  
             db_session.commit()
         else:
-            return "Utente non trovato.", 404  # Ritorna errore se l'utente non esiste
+            return "Utente non trovato.", 404 
     except Exception as e:
         print("Errore nell'aggiornamento dell'approvazione:", e)
-        return f"Si è verificato un errore nell'aggiornamento dell'approvazione: {e}", 500  # Includi l'errore nel messaggio di risposta
+        return f"Si è verificato un errore nell'aggiornamento dell'approvazione: {e}", 500 
     finally:
         db_session.close()
     return redirect(url_for('view_users'))
@@ -169,7 +165,7 @@ def update_manual(user_id):
     try:
         user = db_session.query(User).get(user_id)
         if user:
-            user.manuale = request.form['manuale']  # Aggiorna il valore del campo manuale
+            user.manuale = request.form['manuale']  
             db_session.commit()
         else:
             return "Utente non trovato.", 404
@@ -185,5 +181,5 @@ def download_file(filename):
     return send_from_directory(app.config['UPLOAD_FOLDER'], filename)
 
 if __name__ == '__main__':
-    port = int(os.environ.get('PORT', 5000))
+    port = int(os.getenv('PORT', 5000)) 
     app.run(host='0.0.0.0', port=port, debug=True)
