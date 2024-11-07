@@ -1,20 +1,23 @@
 from flask import Flask, request, render_template, redirect, url_for, session
 import os
+from dotenv import load_dotenv  
 from sqlalchemy import create_engine, Column, BigInteger, String, Float
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 from flask import send_from_directory
 
-#configurazione dell'app Flask
+load_dotenv()
+
+#configuro app flask
 app = Flask(__name__)
-app.secret_key = 'una_chiave_segreta' 
-app.config['UPLOAD_FOLDER'] = 'uploads'
+app.secret_key = os.getenv('SECRET_KEY') 
+app.config['UPLOAD_FOLDER'] = os.getenv('UPLOAD_FOLDER')  
 
 if not os.path.exists(app.config['UPLOAD_FOLDER']):
     os.makedirs(app.config['UPLOAD_FOLDER'])
 
-#configurazione del db PostgreSQL
-DATABASE_URL = os.getenv('DATABASE_URL')
+#conf db PostgreSQL
+DATABASE_URL = os.getenv('DATABASE_URL') 
 engine = create_engine(DATABASE_URL)
 Base = declarative_base()
 
@@ -33,7 +36,7 @@ class User(Base):
     approvato = Column(String)
     numero_tessera = Column(BigInteger)  
     inviato = Column(String)
-    manuale = Column(String) 
+    manuale = Column(String)
 
 Base.metadata.create_all(engine)
 Session = sessionmaker(bind=engine)
@@ -89,14 +92,15 @@ def submit():
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
+    pin = os.getenv('PIN')  
     if request.method == 'POST':
-        pin = request.form['pin']
-        if pin == '1234':
+        input_pin = request.form['pin']
+        if input_pin == pin:  
             session['authenticated'] = True 
             return redirect(url_for('view_users'))
         else:
-            return "PIN errato!", 403 
-    return render_template('login.html') 
+            return "PIN errato!", 403
+    return render_template('login.html')  
 
 @app.route('/view_users')
 def view_users():
@@ -177,5 +181,7 @@ def download_file(filename):
     return send_from_directory(app.config['UPLOAD_FOLDER'], filename)
 
 if __name__ == '__main__':
-    port = int(os.environ.get('PORT', 5000))
+    port = int(os.getenv('PORT', 5000)) 
+    print(f"Starting app on port {port}")
     app.run(host='0.0.0.0', port=port, debug=True)
+
