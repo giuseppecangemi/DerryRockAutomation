@@ -107,14 +107,32 @@
         function validateForm() {
             const cartaIdentita = document.getElementById("carta_identita").value;
             const file = document.getElementById("file").files.length;
-            const errorMessage = document.getElementById("dateError");
+            const fileErrorMessage = document.getElementById("fileError");
 
+            // Resetta i messaggi di errore
+            fileErrorMessage = fileErrorMessage || document.createElement('span');
+            fileErrorMessage.className = 'error-message';
+            fileErrorMessage.id = 'fileError';
+
+            // Se non è presente né la carta d'identità né il file
             if (!cartaIdentita && file === 0) {
-                errorMessage.textContent = "Inserisci il numero della carta d'identità o carica una foto.";
+                fileErrorMessage.textContent = "Inserisci il numero della carta d'identità o carica una foto.";
+                document.body.appendChild(fileErrorMessage);
                 return false;
-            } else {
-                errorMessage.textContent = "";
             }
+
+            // Se è presente sia la carta d'identità che il file
+            if (cartaIdentita && file > 0) {
+                fileErrorMessage.textContent = "Puoi caricare solo uno dei due: la carta d'identità o il file.";
+                document.body.appendChild(fileErrorMessage);
+                return false;
+            }
+
+            // Se il form è valido, rimuove i messaggi di errore
+            if (fileErrorMessage.textContent) {
+                fileErrorMessage.textContent = "";
+            }
+
             return true;
         }
     </script>

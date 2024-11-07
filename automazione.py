@@ -37,6 +37,9 @@ print("Massimo valore: " + str(massimo_valore))
 numero_tessera = (massimo_valore + 1) if pd.notnull(massimo_valore) else 1
 print("NUMERO TESSERA: " + str(numero_tessera))
 
+if numero_tessera >= 13000:
+    raise ValueError("Errore: il range per il numero della tessera è stato superato.")
+
 # LOGICA 
 for index, row in df.iterrows():
     if row['approvato'] == 'SI' and pd.isnull(row['numero_tessera']):

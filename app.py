@@ -109,7 +109,12 @@ def view_users():
 
     db_session = Session()
     try:
-        users = db_session.query(User).all()
+        #visualizzo prima i soci non approvati
+        non_approvati = db_session.query(User).filter(User.approvato == "").order_by(User.nome, User.cognome).all()
+        approvati = db_session.query(User).filter(User.approvato == "SI").order_by(User.nome, User.cognome).all()
+
+        users = non_approvati + approvati
+
         return render_template('view_users.html', users=users)
     except Exception as e:
         print("Errore nel recupero degli utenti:", e)
